@@ -19,4 +19,6 @@ public class Movie
     public string Genre { get; set; }
     
     public decimal TicketPrice { get; set; }
+    
+    public ICollection<Booking> Bookings { get; set; }
 }
