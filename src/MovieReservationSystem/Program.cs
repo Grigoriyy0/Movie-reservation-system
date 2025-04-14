@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Writers;
+using MovieReservationSystem.Infrastructure.Contexts;
+
 namespace MovieReservationSystem;
 
 public class Program
@@ -6,6 +10,8 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.Services.AddDbContext<MainContext>(opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+        
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
