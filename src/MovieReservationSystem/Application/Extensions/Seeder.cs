@@ -5,7 +5,7 @@ using MovieReservationSystem.Infrastructure.Services.Abstract;
 
 namespace MovieReservationSystem.Application.Extensions;
 
-public static class Migrator
+public static class Seeder
 {
     private static readonly RoleNamesConstants NamesConstants = new();
     private static readonly RolesIdsConstants IDs = new();
