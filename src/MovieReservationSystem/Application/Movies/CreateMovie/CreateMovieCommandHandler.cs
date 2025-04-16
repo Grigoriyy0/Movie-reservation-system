@@ -29,6 +29,7 @@ public class CreateMovieCommandHandler : IRequestHandler<CreateMovieCommand>
             Name = request.Dto.Name,
             Description = request.Dto.Description,
             AvailableSeats = request.Dto.NumberOfSeats,
+            NumberOfSeats = request.Dto.NumberOfSeats,
             Genre = request.Dto.Category,
             TicketPrice = request.Dto.TicketPrice,
             ShowTime = request.Dto.ShowTime,

@@ -2,6 +2,7 @@ namespace MovieReservationSystem.Domain.Entities;
 
 public class Booking
 {
+    public Guid BookingId { get; set; }
     public Guid UserId { get; set; }
     
     public User User { get; set; }

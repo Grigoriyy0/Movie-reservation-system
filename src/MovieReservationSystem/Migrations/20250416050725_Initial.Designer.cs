@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MovieReservationSystem.Migrations
 {
     [DbContext(typeof(MainContext))]
-    [Migration("20250414150638_Initial")]
+    [Migration("20250416050725_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -27,7 +27,8 @@ namespace MovieReservationSystem.Migrations
 
             modelBuilder.Entity("MovieReservationSystem.Domain.Entities.Booking", b =>
                 {
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("BookingId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("MovieId")
@@ -39,9 +40,14 @@ namespace MovieReservationSystem.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.HasKey("UserId", "MovieId");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("BookingId");
 
                     b.HasIndex("MovieId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Bookings", (string)null);
                 });
