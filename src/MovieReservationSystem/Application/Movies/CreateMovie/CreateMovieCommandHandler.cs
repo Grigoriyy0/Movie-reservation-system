@@ -5,7 +5,7 @@ using MovieReservationSystem.Infrastructure.Contexts;
 
 namespace MovieReservationSystem.Application.Movies.CreateMovie;
 
-public class CreateMovieCommandHandler : IRequestHandler<CreateMovieCommand>
+public class CreateMovieCommandHandler : IRequestHandler<CreateMovieCommand, Unit>
 {
     private readonly MainContext _context;
 
@@ -14,29 +14,31 @@ public class CreateMovieCommandHandler : IRequestHandler<CreateMovieCommand>
         _context = context;
     }
 
-    public async Task Handle(CreateMovieCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(CreateMovieCommand request, CancellationToken cancellationToken)
     {
-        var movie = await _context.Movies.FirstOrDefaultAsync(x => x.Name == request.Dto.Name, cancellationToken);
+        var movie = await _context.Movies.FirstOrDefaultAsync(x => x.Name == request.Name, cancellationToken);
 
         if (movie is not null)
         {
-            throw new Exception($"Movie with name '{request.Dto.Name}' is already exists.");
+            throw new Exception($"Movie with name '{request.Name}' is already exists.");
         }
 
         var newMovie = new Movie
         {
             Id = Guid.NewGuid(),
-            Name = request.Dto.Name,
-            Description = request.Dto.Description,
-            AvailableSeats = request.Dto.NumberOfSeats,
-            NumberOfSeats = request.Dto.NumberOfSeats,
-            Genre = request.Dto.Category,
-            TicketPrice = request.Dto.TicketPrice,
-            ShowTime = request.Dto.ShowTime,
-            ImageUrl = request.Dto.ImageUrl,
+            Name = request.Name,
+            Description = request.Description,
+            AvailableSeats = request.NumberOfSeats,
+            NumberOfSeats = request.NumberOfSeats,
+            Genre = request.Category,
+            TicketPrice = request.TicketPrice,
+            ShowTime = request.ShowTime,
+            ImageUrl = request.ImageUrl,
         };
         
         await _context.Movies.AddAsync(newMovie, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
+        
+        return Unit.Value;
     }
 }

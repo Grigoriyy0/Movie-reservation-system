@@ -20,7 +20,7 @@ namespace MovieReservationSystem.Controllers
 
         [HttpPost]
         [Route("create/")]
-        public async Task<IActionResult> CreateMovie(CreateMovieCommand command)
+        public async Task<IActionResult> CreateMovie([FromBody] CreateMovieCommand command)
         {
             await _mediator.Send(command);
             

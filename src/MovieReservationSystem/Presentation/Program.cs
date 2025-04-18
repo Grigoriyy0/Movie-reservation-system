@@ -1,12 +1,18 @@
+using System.Reflection;
 using System.Text;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MovieReservationSystem.Application.Authorization;
+using MovieReservationSystem.Application.Behaviours;
 using MovieReservationSystem.Application.Extensions;
+using MovieReservationSystem.Application.Movies.CreateMovie;
 using MovieReservationSystem.Infrastructure.Contexts;
 using MovieReservationSystem.Infrastructure.Services;
 using MovieReservationSystem.Infrastructure.Services.Abstract;
+using MovieReservationSystem.Presentation.Middlewares;
 
 namespace MovieReservationSystem;
 
@@ -22,7 +28,6 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -40,12 +45,15 @@ public class Program
                 };
             });
         builder.Services.AddAuthorization();
-
         
-        builder.Services.AddMediatR(cfg =>
+        
+        builder.Services.AddMediatR(cfg => 
         {
             cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+            cfg.AddOpenBehavior(typeof(ValidationBehaviors<,>));
         });
+        
+        builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         
         var app = builder.Build();
 
@@ -55,8 +63,9 @@ public class Program
             app.UseSwaggerUI();
         }
 
+        app.UseMiddleware<ValidationExceptionHandlerMiddleware>();
         app.UseHttpsRedirection();
-
+        app.UseAuthentication();
         app.UseAuthorization();
 
 
