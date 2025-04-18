@@ -61,6 +61,7 @@ namespace MovieReservationSystem.Migrations
                 name: "Bookings",
                 columns: table => new
                 {
+                    BookingId = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     MovieId = table.Column<Guid>(type: "uuid", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
@@ -68,7 +69,7 @@ namespace MovieReservationSystem.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Bookings", x => new { x.UserId, x.MovieId });
+                    table.PrimaryKey("PK_Bookings", x => x.BookingId);
                     table.ForeignKey(
                         name: "FK_Bookings_Movies_MovieId",
                         column: x => x.MovieId,
@@ -111,6 +112,11 @@ namespace MovieReservationSystem.Migrations
                 name: "IX_Bookings_MovieId",
                 table: "Bookings",
                 column: "MovieId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_UserId",
+                table: "Bookings",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_RoleId",

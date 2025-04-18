@@ -8,7 +8,7 @@ public class BookingEntityTypeConfiguration : IEntityTypeConfiguration<Booking>
 {
     public void Configure(EntityTypeBuilder<Booking> builder)
     {
-        builder.HasKey(x => new {x.UserId, x.MovieId});
+        builder.HasKey(x => x.BookingId);
         
         builder.HasOne(x => x.Movie)
             .WithMany(y => y.Bookings)
