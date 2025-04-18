@@ -46,7 +46,7 @@ namespace MovieReservationSystem.Controllers
                 return BadRequest(result.Errors);
             }
             
-            var token = _jwtService.GenerateToken(command.Dto.Email, result.Value.Roles ,result.Value.UserId);
+            var token = _jwtService.GenerateToken(command.Email, result.Value.Roles ,result.Value.UserId);
             
             return Created((string?)null, new
             {

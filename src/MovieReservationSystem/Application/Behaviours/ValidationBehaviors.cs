@@ -6,9 +6,7 @@ namespace MovieReservationSystem.Application.Behaviours;
 public class ValidationBehaviors<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators) : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
-    {
-        Console.WriteLine($"Validating {typeof(TRequest).Name}"); // Debug output
-        
+    {        
         if (validators.Any())
         {
             var context = new ValidationContext<TRequest>(request);

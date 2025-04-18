@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using MovieReservationSystem.Application.Authorization;
 using MovieReservationSystem.Application.Behaviours;
 using MovieReservationSystem.Application.Extensions;
@@ -27,7 +28,34 @@ public class Program
         builder.Services.AddScoped<IHashProvider, HashProvider>();
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(cfg =>
+        {
+            cfg.SwaggerDoc("v1", new OpenApiInfo {Title = "Movie reservation system", Version = "v1"});
+            
+            cfg.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.Http,
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Scheme = "bearer",
+                Description = "Input JWT token here"
+            });
+            
+            cfg.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    }, []
+                }
+                
+            });
+        });
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {

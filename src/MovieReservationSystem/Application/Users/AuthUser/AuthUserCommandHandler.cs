@@ -19,14 +19,14 @@ public class AuthUserCommandHandler : IRequestHandler<AuthUserCommand, Result<Au
 
     public async Task<Result<AuthResponse>> Handle(AuthUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == request.Dto.Email, cancellationToken);
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
 
         if (user == null)
         {
             return Result<AuthResponse>.AsFailure("User with this email address does not exist.");
         }
 
-        var dtoPasswordHash = _hashProvider.Hash(request.Dto.Password);
+        var dtoPasswordHash = _hashProvider.Hash(request.Password);
 
         if (dtoPasswordHash != user.PasswordHash)
         {

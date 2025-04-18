@@ -1,5 +1,5 @@
 using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MovieReservationSystem.Application.Movies.CreateMovie;
 using MovieReservationSystem.Application.Movies.GetMovieById;
@@ -17,7 +17,8 @@ namespace MovieReservationSystem.Controllers
         {
             _mediator = mediator;
         }
-
+        
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("create/")]
         public async Task<IActionResult> CreateMovie([FromBody] CreateMovieCommand command)
