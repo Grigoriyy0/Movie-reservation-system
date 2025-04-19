@@ -21,18 +21,36 @@ namespace MovieReservationSystem.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> Book(CreateBookingCommand command)
         {
-            var bookingId = await _mediator.Send(command);
-            
-            return Ok(bookingId);
+            try
+            {
+                var bookingId = await _mediator.Send(command);
+
+                return Ok(bookingId);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [Authorize(Roles = "User")]
         [HttpDelete]
-        public async Task<IActionResult> CancelBooking(CancelBookingCommand command)
+        [Route("/cancel/{bookingId:guid}")]
+        public async Task<IActionResult> CancelBooking(Guid bookingId)
         {
-            await _mediator.Send(command);
-            
-            return NoContent();
+            try
+            {
+                var command = new CancelBookingCommand(bookingId);
+                
+                await _mediator.Send(command);
+
+                return NoContent();
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
     }
 }
