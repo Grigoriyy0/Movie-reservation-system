@@ -78,7 +78,9 @@ namespace MovieReservationSystem.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut]
+        [Route("update/")]
         public async Task<IActionResult> UpdateMovie(UpdateMovieCommand command)
         {
             var result = await _mediator.Send(command);

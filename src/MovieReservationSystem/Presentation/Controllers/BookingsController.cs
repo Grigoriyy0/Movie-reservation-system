@@ -1,10 +1,10 @@
 using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MovieReservationSystem.Application.Bookings.CancelBooking;
 using MovieReservationSystem.Application.Bookings.CreateBooking;
-using MovieReservationSystem.Domain.Entities;
 
-namespace MovieReservationSystem.Controllers
+namespace MovieReservationSystem.Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -17,12 +17,22 @@ namespace MovieReservationSystem.Controllers
             _mediator = mediator;
         }
 
+        [Authorize(Roles = "User")]
         [HttpPost]
         public async Task<IActionResult> Book(CreateBookingCommand command)
         {
             var bookingId = await _mediator.Send(command);
             
             return Ok(bookingId);
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpDelete]
+        public async Task<IActionResult> CancelBooking(CancelBookingCommand command)
+        {
+            await _mediator.Send(command);
+            
+            return NoContent();
         }
     }
 }
