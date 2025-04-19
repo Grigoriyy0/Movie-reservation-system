@@ -6,6 +6,7 @@ using MovieReservationSystem.Application.Movies.CreateMovie;
 using MovieReservationSystem.Application.Movies.DeleteMovie;
 using MovieReservationSystem.Application.Movies.GetMovieById;
 using MovieReservationSystem.Application.Movies.GetMovies;
+using MovieReservationSystem.Application.Movies.GetTotalRevenue;
 using MovieReservationSystem.Application.Movies.UpdateMovie;
 
 namespace MovieReservationSystem.Controllers
@@ -86,6 +87,26 @@ namespace MovieReservationSystem.Controllers
             var result = await _mediator.Send(command);
 
             return Ok(result);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        [Route("revenue/{id:guid}")]
+        public async Task<IActionResult> GetRevenueById(Guid id)
+        {
+            var command = new GetTotalRevenueCommand(id);
+
+            try
+            {
+                var result = await _mediator.Send(command);
+
+                return Ok(result);
+            }
+            catch (ArgumentNullException e)
+            {
+                return BadRequest(e.Message);
+            }
+
         }
     }
 }
