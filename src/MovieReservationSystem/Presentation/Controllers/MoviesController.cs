@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MovieReservationSystem.Application.Movies;
 using MovieReservationSystem.Application.Movies.CreateMovie;
+using MovieReservationSystem.Application.Movies.DeleteMovie;
 using MovieReservationSystem.Application.Movies.GetMovieById;
 using MovieReservationSystem.Application.Movies.GetMovies;
+using MovieReservationSystem.Application.Movies.GetTotalRevenue;
+using MovieReservationSystem.Application.Movies.UpdateMovie;
 
 namespace MovieReservationSystem.Controllers
 {
@@ -62,6 +65,48 @@ namespace MovieReservationSystem.Controllers
             {
                 return BadRequest(e.Message);
             }
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> DeleteMovie(Guid id)
+        {
+            var command = new DeleteMovieCommand(id);
+            
+            await _mediator.Send(command);
+            
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut]
+        [Route("update/")]
+        public async Task<IActionResult> UpdateMovie(UpdateMovieCommand command)
+        {
+            var result = await _mediator.Send(command);
+
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        [Route("revenue/{id:guid}")]
+        public async Task<IActionResult> GetRevenueById(Guid id)
+        {
+            var command = new GetTotalRevenueCommand(id);
+
+            try
+            {
+                var result = await _mediator.Send(command);
+
+                return Ok(result);
+            }
+            catch (ArgumentNullException e)
+            {
+                return BadRequest(e.Message);
+            }
+
         }
     }
 }
