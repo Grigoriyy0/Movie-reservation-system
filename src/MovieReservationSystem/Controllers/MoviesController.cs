@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MovieReservationSystem.Application.Movies;
 using MovieReservationSystem.Application.Movies.CreateMovie;
 using MovieReservationSystem.Application.Movies.GetMovieById;
 using MovieReservationSystem.Application.Movies.GetMovies;
@@ -28,6 +29,18 @@ namespace MovieReservationSystem.Controllers
             return Created();
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [Route("images/upload/")]
+        public async Task<IActionResult> UploadPhotograph(Guid movieId, IFormFile image)
+        {
+            var command = new UploadMoviePhotographCommand(movieId, image);
+            
+            var result = await _mediator.Send(command);
+            
+            return Ok(result);
+        }
+        
         [HttpGet]
         public async Task<IActionResult> GetMovies()
         {

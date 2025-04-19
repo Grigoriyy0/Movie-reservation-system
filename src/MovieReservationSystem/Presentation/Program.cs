@@ -3,7 +3,9 @@ using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MovieReservationSystem.Application.Authorization;
@@ -11,6 +13,7 @@ using MovieReservationSystem.Application.Behaviours;
 using MovieReservationSystem.Application.Extensions;
 using MovieReservationSystem.Application.Movies.CreateMovie;
 using MovieReservationSystem.Infrastructure.Contexts;
+using MovieReservationSystem.Infrastructure.Options;
 using MovieReservationSystem.Infrastructure.Services;
 using MovieReservationSystem.Infrastructure.Services.Abstract;
 using MovieReservationSystem.Presentation.Middlewares;
@@ -56,6 +59,21 @@ public class Program
                 
             });
         });
+        
+        
+
+        builder.Services.Configure<PicturesStorageOptions>(builder.Configuration.GetSection(nameof(PicturesStorageOptions)));
+        builder.Services.AddSingleton<PhysicalDirectoryResolver>();
+
+        builder.Services.AddTransient<IPhotoManager, PhotoManager>();
+        
+        builder.Services.Configure<FormOptions>(options =>
+        {
+            options.MultipartBodyLengthLimit = 1024 * 1024 * 10;
+        });
+        
+        
+        
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -63,8 +81,8 @@ public class Program
 
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = false,
-                    ValidIssuer = "AuthServer",
+                    ValidateIssuer = true,
+                    ValidIssuer = "CsharpAPI",
                     ValidateAudience = false,
                     ValidAudience = "Client",
                     ValidateLifetime = true,
@@ -90,7 +108,18 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+        
+        var directoryResolver = app.Services.GetRequiredService<PhysicalDirectoryResolver>();
 
+        Directory.CreateDirectory(directoryResolver.PathToPicturesDir);
+
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(directoryResolver.PathToPicturesDir),
+            RequestPath = "/images"
+        });
+
+        
         app.UseMiddleware<ValidationExceptionHandlerMiddleware>();
         app.UseHttpsRedirection();
         app.UseAuthentication();
